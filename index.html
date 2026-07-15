@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Plannit — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1E8D6;
+    --paper-2:#EADFC7;
+    --ink:#2B2118;
+    --ink-soft:#6B5D4C;
+    --wine:#7B2D3E;
+    --wine-dark:#5E1F2D;
+    --sage:#7C8A5C;
+    --butter:#E8B84B;
+    --butter-soft:#F6E2AE;
+    --line:#D8CBB0;
+    --white:#FBF8F1;
+    --red:#B23A2E;
+    --green:#4C7A3F;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: radial-gradient(circle at 20% 0%, #EFE3CB 0%, #E4D6B8 100%);
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:32px 16px; font-family:'Inter', sans-serif; color:var(--ink);
+  }
+  .frame{
+    width:100%; max-width:420px; background:var(--paper); border-radius:22px;
+    box-shadow:0 30px 60px -20px rgba(43,33,24,0.35), 0 0 0 1px rgba(43,33,24,0.06);
+    overflow:hidden; position:relative;
+  }
+  .frame::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:6px;
+    background:repeating-linear-gradient(90deg, var(--wine) 0 14px, transparent 14px 22px);
+    opacity:0.55;
+  }
+  header.top{ padding:22px 22px 14px; display:flex; align-items:center; justify-content:space-between; }
+  .wordmark{ font-family:'Fraunces', serif; font-weight:600; font-size:22px; letter-spacing:-0.02em; color:var(--wine-dark); }
+  .wordmark span{ color: var(--butter); text-shadow: -1px 0 var(--wine-dark); }
+  .stamp{ font-family:'Space Mono', monospace; font-size:10px; letter-spacing:0.08em; color:var(--ink-soft); border:1px solid var(--line); border-radius:20px; padding:4px 10px; text-transform:uppercase; }
+  nav.tabs{ display:flex; margin:0 22px 18px; background:var(--paper-2); border-radius:12px; padding:4px; gap:4px; }
+  nav.tabs button{ flex:1; border:none; background:transparent; padding:9px 4px; font-family:'Inter'; font-weight:600; font-size:12.5px; color:var(--ink-soft); border-radius:9px; cursor:pointer; transition:all .18s ease; }
+  nav.tabs button.active{ background:var(--white); color:var(--wine-dark); box-shadow:0 2px 6px rgba(43,33,24,0.12); }
+  main{ padding:2px 22px 26px; }
+  .screen{ display:none; animation:fade .25s ease; }
+  .screen.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+  .eyebrow{ font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--wine); margin-bottom:6px; }
+  h1{ font-family:'Fraunces', serif; font-weight:600; font-size:24px; line-height:1.15; margin-bottom:4px; }
+  .sub{ font-size:13px; color:var(--ink-soft); margin-bottom:16px; line-height:1.5;}
+  .sub b{ color:var(--ink); }
+
+  label.field-label{ display:block; font-size:11.5px; font-weight:600; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:7px; margin-top:16px; }
+  input[type=text]{ width:100%; border:1px solid var(--line); background:var(--white); border-radius:10px; padding:12px 13px; font-family:'Inter'; font-size:14.5px; color:var(--ink); }
+  input[type=text]::placeholder{ color:#B3A48E; }
+
+  .place-row{ display:flex; align-items:center; gap:10px; border:1px solid var(--line); background:var(--white); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+  .place-row input[type=text]{ border:none; padding:0; flex:1; }
+  .place-emoji{ font-size:16px; }
+
+  .btn-primary{ width:100%; background:var(--wine); color:var(--white); border:none; border-radius:12px; padding:14px; font-family:'Inter'; font-weight:700; font-size:14px; margin-top:22px; cursor:pointer; box-shadow:0 8px 16px -6px rgba(123,45,62,0.5); }
+  .btn-ghost{ width:100%; background:transparent; border:1px dashed var(--line); color:var(--ink-soft); border-radius:12px; padding:10px; font-size:12.5px; margin-top:8px; cursor:pointer; font-weight:600; }
+  .link-preview{ margin-top:14px; border:1px solid var(--line); background:var(--paper-2); border-radius:10px; padding:10px 12px; display:flex; align-items:center; gap:8px; font-family:'Space Mono', monospace; font-size:11.5px; color:var(--wine-dark); }
+
+  /* Calendar */
+  .cal-head{ display:flex; justify-content:space-between; align-items:center; margin:4px 0 10px; }
+  .cal-nav{ background:var(--white); border:1px solid var(--line); width:26px; height:26px; border-radius:8px; font-size:14px; color:var(--wine-dark); cursor:pointer; }
+  .cal-title{ font-family:'Fraunces', serif; font-weight:600; font-size:14.5px; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+  .cal-dow{ text-align:center; font-size:9px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; padding-bottom:3px; }
+  .cal-cell{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:9px; font-size:12px; font-weight:600; cursor:pointer; position:relative; border:1.5px solid transparent; background:var(--white); color:var(--ink); transition:all .12s; }
+  .cal-cell.empty{ visibility:hidden; cursor:default; }
+  .cal-cell.weekend{ background:var(--butter-soft); }
+  .cal-cell.past{ opacity:0.28; cursor:default; pointer-events:none; }
+  .cal-cell.candidate{ border-color:var(--wine); }
+  .cal-cell.candidate::after{ content:'✺'; position:absolute; top:-5px; right:-3px; font-size:8px; color:var(--wine); }
+  .cal-cell.disabled-guest{ opacity:0.3; cursor:default; pointer-events:none; background:var(--paper-2); }
+  .cal-cell.cant{ background:var(--red); color:var(--white); border-color:var(--red); }
+  .cal-cell.pref{ background:var(--green); color:var(--white); border-color:var(--green); }
+  .cal-grid.locked .cal-cell{ cursor:default; }
+
+  .cand-summary{ margin-top:12px; font-size:12px; color:var(--ink-soft); }
+  .cand-summary b{ color:var(--wine-dark); }
+  .cand-chip-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .cand-chip{ font-family:'Space Mono', monospace; font-size:10.5px; background:var(--white); border:1px solid var(--line); color:var(--wine-dark); border-radius:20px; padding:4px 9px; }
+
+  .legend{ display:flex; gap:12px; margin-top:12px; flex-wrap:wrap; }
+  .legend-item{ display:flex; align-items:center; gap:5px; font-size:10.5px; color:var(--ink-soft); }
+  .dot{ width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ border:1px solid var(--line); background:var(--white); border-radius:20px; padding:8px 13px; font-size:12.5px; font-weight:500; cursor:pointer; color:var(--ink-soft); transition:all .15s; }
+  .chip.on{ background:var(--wine); border-color:var(--wine); color:var(--white); }
+  .time-toggle{ display:flex; gap:8px; margin-top:8px; }
+  .time-toggle .chip{ flex:1; text-align:center; }
+
+  .badge-best{ display:inline-flex; align-items:center; gap:5px; background:var(--butter); color:var(--wine-dark); font-size:10px; font-weight:700; letter-spacing:0.04em; padding:3px 9px; border-radius:20px; text-transform:uppercase; margin-bottom:8px; }
+  .date-row{ margin-bottom:14px; }
+  .date-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;}
+  .date-head .dlabel{ font-family:'Fraunces', serif; font-weight:600; font-size:15px; }
+  .date-head .dcount{ font-family:'Space Mono', monospace; font-size:11px; color:var(--ink-soft); }
+  .bar-track{ background:var(--paper-2); border-radius:8px; height:22px; overflow:hidden; position:relative; }
+  .bar-fill{ height:100%; border-radius:8px; display:flex; align-items:center; padding-left:8px; gap:3px; transition:width .4s ease;}
+  .bar-fill.best{ background:linear-gradient(90deg, var(--sage), #94A472); }
+  .bar-fill.ok{ background:linear-gradient(90deg, #C9BFA0, #B8AC88); }
+  .avatar{ width:15px; height:15px; border-radius:50%; background:var(--white); color:var(--wine-dark); font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; font-family:'Space Mono', monospace; border:1px solid rgba(0,0,0,0.08); }
+  .divider{ border:none; border-top:1px dashed var(--line); margin:22px 0 16px; }
+
+  .vote-row{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .vote-main{ flex:1; min-width:0; }
+  .vote-head{ display:flex; justify-content:space-between; font-size:13px; font-weight:600; margin-bottom:5px; }
+  .vote-head .vname{ display:flex; align-items:center; gap:7px; }
+  .vote-head .vcount{ font-family:'Space Mono', monospace; font-size:11px; color:var(--ink-soft); font-weight:400;}
+  .vote-track{ background:var(--paper-2); border-radius:8px; height:10px; overflow:hidden; }
+  .vote-fill{ height:100%; background:var(--wine); border-radius:8px; transition:width .4s ease; }
+  .tap-hint{ font-size:10px; color:#B3A48E; text-align:center; margin-top:2px; margin-bottom:14px;}
+
+  .vote-btn{
+    width:28px; height:28px; flex-shrink:0;
+    border:2px solid var(--line); background:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .15s; color:var(--white); font-size:13px; font-weight:700;
+  }
+  .vote-btn.radio{ border-radius:50%; }
+  .vote-btn.checkbox{ border-radius:8px; }
+  .vote-btn.checked{ background:var(--wine); border-color:var(--wine); }
+  .vote-btn:active{ transform:scale(0.9); }
+
+  .postcode-row{ display:flex; gap:8px; }
+  .postcode-row input[type=text]{ flex:1; }
+  .btn-accent{ width:auto; white-space:nowrap; margin-top:0; padding:0 16px; background:var(--butter); border:1px solid var(--butter); color:var(--wine-dark); border-radius:10px; font-family:'Inter'; font-weight:700; font-size:12.5px; cursor:pointer; }
+  .suggest-note{ font-size:11.5px; color:var(--ink-soft); margin:12px 0 8px; }
+  .suggest-card{ display:flex; align-items:center; gap:10px; border:1px solid var(--line); background:var(--white); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+  .suggest-emoji{ font-size:17px; }
+  .suggest-main{ flex:1; min-width:0; }
+  .suggest-name{ font-weight:600; font-size:13.5px; }
+  .suggest-blurb{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+  .suggest-add{ width:26px; height:26px; border-radius:50%; border:2px solid var(--wine); background:var(--white); color:var(--wine); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; cursor:pointer; flex-shrink:0; }
+  .suggest-add.added{ background:var(--green); border-color:var(--green); color:var(--white); cursor:default; }
+  .place-remove{ background:none; border:none; color:var(--ink-soft); font-size:17px; line-height:1; cursor:pointer; padding:0 2px; flex-shrink:0; }
+  .place-remove:hover{ color:var(--red); }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <header class="top">
+    <div class="wordmark">plann<span>i</span>t</div>
+    <div class="stamp">rsvp‑050</div>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-screen="create">Host</button>
+    <button data-screen="respond">Guest</button>
+    <button data-screen="results">Results</button>
+  </nav>
+
+  <main>
+
+    <!-- HOST / CREATE -->
+    <section class="screen active" id="create">
+      <div class="eyebrow">New gathering</div>
+      <h1>Set the invite</h1>
+      <div class="sub">One link. No accounts. Guests just tap and go.</div>
+
+      <label class="field-label">What's the occasion</label>
+      <input type="text" value="Sarah's Birthday Dinner" placeholder="e.g. Sarah's Birthday Dinner">
+
+      <label class="field-label">How should dates work?</label>
+      <div class="chip-row" id="dateModeRow">
+        <div class="chip on" data-mode="specific">Specific dates</div>
+        <div class="chip" data-mode="weekend">Weekends only</div>
+        <div class="chip" data-mode="weekday">Weekdays only</div>
+        <div class="chip" data-mode="open">Guests suggest</div>
+      </div>
+      <div class="sub" id="dateModeNote" style="margin-top:10px; margin-bottom:0;">Browse the year and tap any dates that could work — guests will only vote on these.</div>
+
+      <div id="hostCalWrap" style="margin-top:10px;">
+        <div id="hostCal"></div>
+        <div class="cand-summary" id="candSummaryWrap"><b id="candCount">3</b> dates shortlisted</div>
+        <div class="cand-chip-row" id="candChips"></div>
+      </div>
+
+      <label class="field-label">Not sure where? Get AI ideas by postcode</label>
+      <div class="postcode-row">
+        <input type="text" id="postcodeInput" placeholder="e.g. 2000 or Bondi Beach">
+        <button class="btn-accent" id="suggestBtn">✨ Suggest</button>
+      </div>
+      <div class="suggest-note" id="suggestNote" style="display:none;"></div>
+      <div id="suggestWrap"></div>
+
+      <label class="field-label">Places guests will vote on</label>
+      <div id="placeList"></div>
+      <button class="btn-ghost" id="addPlaceBtn">+ Add another place</button>
+
+      <label class="field-label">How can guests vote?</label>
+      <div class="chip-row" id="pollModeRow">
+        <div class="chip on" data-mode="single">Single choice</div>
+        <div class="chip" data-mode="multiple">Multiple choice</div>
+      </div>
+
+      <button class="btn-primary">Create link &amp; send invite</button>
+      <div class="link-preview">🔗 plannit.app/sarahs-bday-x7q &nbsp; · &nbsp; copy</div>
+    </section>
+
+    <!-- GUEST / RESPOND -->
+    <section class="screen" id="respond">
+      <div class="eyebrow">Sarah's Birthday Dinner</div>
+      <h1>When are you free?</h1>
+
+      <label class="field-label">Your name</label>
+      <input type="text" placeholder="e.g. Jamie" id="guestNameInput">
+
+      <div class="sub" style="margin-top:14px;">Tap a highlighted date once for <b style="color:var(--red)">can't make it</b>, twice for <b style="color:var(--green)">prefer this one</b>.</div>
+
+      <div id="guestCal"></div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="dot" style="background:var(--white); border:1.5px solid var(--wine)"></div>Proposed</div>
+        <div class="legend-item"><div class="dot" style="background:var(--green)"></div>Preferred</div>
+        <div class="legend-item"><div class="dot" style="background:var(--red)"></div>Can't do</div>
+        <div class="legend-item"><div class="dot" style="background:var(--paper-2)"></div>Not an option</div>
+      </div>
+
+      <label class="field-label">Evening or weekend leaning?</label>
+      <div class="time-toggle">
+        <div class="chip on">Weekday evenings</div>
+        <div class="chip">Weekends only</div>
+        <div class="chip">Either works</div>
+      </div>
+
+      <hr class="divider">
+      <div class="eyebrow">Where to eat — tap the button to vote</div>
+      <div id="votesGuest"></div>
+      <div class="tap-hint" id="pollHintGuest">one vote per option · tap again to remove it</div>
+
+      <button class="btn-primary">Save my availability</button>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="screen" id="results">
+      <div class="eyebrow">Sarah's Birthday Dinner · 6 of 8 replied</div>
+      <h1>Best dates so far</h1>
+
+      <div class="date-row">
+        <div class="date-head">
+          <span class="dlabel">Sat 25 <span style="font-weight:400; color:var(--ink-soft); font-size:12px;">— evening</span></span>
+          <span class="dcount">5 of 6</span>
+        </div>
+        <div class="badge-best">✺ Best fit</div>
+        <div class="bar-track"><div class="bar-fill best" style="width:83%">
+          <div class="avatar">AL</div><div class="avatar">JM</div><div class="avatar">RK</div><div class="avatar">TT</div><div class="avatar">SB</div>
+        </div></div>
+      </div>
+
+      <div class="date-row">
+        <div class="date-head">
+          <span class="dlabel">Fri 24</span>
+          <span class="dcount">3 of 6</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill ok" style="width:50%">
+          <div class="avatar">AL</div><div class="avatar">RK</div><div class="avatar">SB</div>
+        </div></div>
+      </div>
+
+      <div class="date-row">
+        <div class="date-head">
+          <span class="dlabel">Sun 26</span>
+          <span class="dcount">2 of 6</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill ok" style="width:33%">
+          <div class="avatar">JM</div><div class="avatar">TT</div>
+        </div></div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="eyebrow">Where to eat</div>
+      <div id="votesResults"></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll('nav.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.screen).classList.add('active');
+    });
+  });
+
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const TODAY = new Date(2026,6,15);
+  const pad = n => n<10 ? '0'+n : ''+n;
+  const dateKey = (y,m,d) => `${y}-${pad(m+1)}-${pad(d)}`;
+
+  let dateMode = 'specific';
+  let candidateDates = new Set(['2026-07-24','2026-07-25','2026-07-26']);
+  let guestResponses = {};
+
+  let hostView = { year:2026, month:6 };
+  let guestView = { year:2026, month:6 };
+
+  const MODE_NOTES = {
+    specific: "Browse the year and tap any dates that could work — guests will only vote on these.",
+    weekend: "Every Saturday and Sunday is fair game — guests pick whichever weekend suits them.",
+    weekday: "Any weekday works — guests choose the day that suits them.",
+    open: "No shortlist — guests browse freely and flag whatever days work for them."
+  };
+
+  function isCandidate(key, dow){
+    if(dateMode==='specific') return candidateDates.has(key);
+    if(dateMode==='weekend') return dow===0 || dow===6;
+    if(dateMode==='weekday') return dow>=1 && dow<=5;
+    if(dateMode==='open') return true;
+  }
+
+  function renderCalendar(containerId, state, mode){
+    const el = document.getElementById(containerId);
+    const y = state.year, m = state.month;
+    const firstDow = new Date(y,m,1).getDay();
+    const daysInMonth = new Date(y,m+1,0).getDate();
+    const locked = (mode==='host' && dateMode!=='specific');
+
+    let html = `<div class="cal-head">
+      <button class="cal-nav" data-dir="-1">‹</button>
+      <div class="cal-title">${MONTHS[m]} ${y}</div>
+      <button class="cal-nav" data-dir="1">›</button>
+    </div><div class="cal-grid${locked?' locked':''}">`;
+    ['S','M','T','W','T','F','S'].forEach(d => html += `<div class="cal-dow">${d}</div>`);
+    for(let i=0;i<firstDow;i++) html += `<div class="cal-cell empty"></div>`;
+
+    for(let d=1; d<=daysInMonth; d++){
+      const key = dateKey(y,m,d);
+      const dow = new Date(y,m,d).getDay();
+      const isWeekend = dow===0 || dow===6;
+      const isPast = new Date(y,m,d) < TODAY;
+      const candidate = isCandidate(key, dow);
+      let cls = 'cal-cell';
+      if(isWeekend) cls += ' weekend';
+      if(isPast) cls += ' past';
+
+      if(mode==='host'){
+        if(candidate) cls += ' candidate';
+      } else {
+        if(candidate){
+          const r = guestResponses[key];
+          if(r==='cant') cls += ' cant';
+          if(r==='pref') cls += ' pref';
+          if(!r) cls += ' candidate';
+        } else {
+          cls += ' disabled-guest';
+        }
+      }
+      html += `<div class="${cls}" data-key="${key}" data-dow="${dow}">${d}</div>`;
+    }
+    el.innerHTML = html;
+
+    el.querySelectorAll('.cal-nav').forEach(btn=>{
+      btn.onclick = ()=>{
+        state.month += parseInt(btn.dataset.dir);
+        if(state.month < 0){ state.month = 11; state.year--; }
+        if(state.month > 11){ state.month = 0; state.year++; }
+        renderCalendar(containerId, state, mode);
+      };
+    });
+
+    el.querySelectorAll('.cal-cell:not(.empty):not(.past)').forEach(cell=>{
+      cell.onclick = ()=>{
+        const key = cell.dataset.key;
+        if(mode==='host'){
+          if(dateMode!=='specific') return;
+          candidateDates.has(key) ? candidateDates.delete(key) : candidateDates.add(key);
+          renderCalendar(containerId, state, mode);
+          updateCandidateSummary();
+        } else {
+          const dow = parseInt(cell.dataset.dow);
+          if(!isCandidate(key, dow)) return;
+          const cur = guestResponses[key];
+          if(!cur) guestResponses[key] = 'cant';
+          else if(cur==='cant') guestResponses[key] = 'pref';
+          else delete guestResponses[key];
+          renderCalendar(containerId, state, mode);
+        }
+      };
+    });
+  }
+
+  function updateCandidateSummary(){
+    document.getElementById('candCount').textContent = candidateDates.size;
+    const sorted = [...candidateDates].sort();
+    const row = document.getElementById('candChips');
+    row.innerHTML = sorted.map(k=>{
+      const [y,m,d] = k.split('-').map(Number);
+      return `<div class="cand-chip">${MONTHS[m-1].slice(0,3)} ${d}</div>`;
+    }).join('');
+  }
+
+  function updateHostModeUI(){
+    document.getElementById('dateModeNote').textContent = MODE_NOTES[dateMode];
+    const showSummary = dateMode === 'specific';
+    document.getElementById('candSummaryWrap').style.display = showSummary ? 'block' : 'none';
+    document.getElementById('candChips').style.display = showSummary ? 'flex' : 'none';
+  }
+
+  document.querySelectorAll('#dateModeRow .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#dateModeRow .chip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+      dateMode = c.dataset.mode;
+      updateHostModeUI();
+      renderCalendar('hostCal', hostView, 'host');
+      renderCalendar('guestCal', guestView, 'guest');
+    });
+  });
+
+  renderCalendar('hostCal', hostView, 'host');
+  renderCalendar('guestCal', guestView, 'guest');
+  updateCandidateSummary();
+  updateHostModeUI();
+
+  document.querySelectorAll('#respond .time-toggle .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#respond .time-toggle .chip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+    });
+  });
+
+  // ---------- host: editable place list ----------
+  function addPlace(emoji, name){
+    const list = document.getElementById('placeList');
+    const row = document.createElement('div');
+    row.className = 'place-row';
+    row.innerHTML = `<span class="place-emoji">${emoji}</span><input type="text" value="${name}" placeholder="Place name"><button class="place-remove" type="button" title="Remove">×</button>`;
+    list.appendChild(row);
+    row.querySelector('.place-remove').onclick = () => row.remove();
+    if(!name) row.querySelector('input').focus();
+    return row;
+  }
+  ['🍜|Ramen Ichiraku','🍝|Trattoria Nonna','🌮|El Fuego'].forEach(s=>{
+    const [emoji,name] = s.split('|');
+    addPlace(emoji,name);
+  });
+  document.getElementById('addPlaceBtn').addEventListener('click', ()=> addPlace('🍽️',''));
+
+  // ---------- host: AI suggestions by postcode (mocked for this design mockup) ----------
+  const SUGGESTION_POOL = [
+    { emoji:'🍣', name:'Sakura Sushi Bar', blurb:'Japanese · $$ · 8 min walk' },
+    { emoji:'🍕', name:'Bella Notte', blurb:'Italian · $$ · 12 min walk' },
+    { emoji:'🥘', name:'Spice Route', blurb:'Indian · $$ · 5 min walk' },
+    { emoji:'🥗', name:'The Grazing Table', blurb:'Modern Australian · $$$ · 10 min walk' },
+    { emoji:'🍔', name:'Burger & Bone', blurb:'American · $$ · 6 min walk' },
+    { emoji:'🍲', name:'Golden Wok', blurb:'Chinese · $ · 9 min walk' },
+    { emoji:'🥙', name:'Cedar & Olive', blurb:'Middle Eastern · $$ · 14 min walk' },
+    { emoji:'🍤', name:'Coastal Catch', blurb:'Seafood · $$$ · 7 min walk' },
+    { emoji:'🌶️', name:'Chili Social', blurb:'Thai · $$ · 4 min walk' },
+    { emoji:'🥖', name:'La Boulangerie', blurb:'French bistro · $$$ · 11 min walk' },
+    { emoji:'🫓', name:'Basil & Bay', blurb:'Mediterranean · $$ · 6 min walk' },
+    { emoji:'🍛', name:'Curry Leaf', blurb:'Sri Lankan · $ · 9 min walk' },
+  ];
+  let lastSuggestedNames = [];
+  let suggestRound = 0;
+
+  function shuffled(arr){
+    const a = arr.slice();
+    for(let i=a.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function nextSuggestions(){
+    let pool = SUGGESTION_POOL.filter(s => !lastSuggestedNames.includes(s.name));
+    if(pool.length < 4) pool = SUGGESTION_POOL.slice();
+    const picked = shuffled(pool).slice(0,4);
+    lastSuggestedNames = picked.map(p=>p.name);
+    return picked;
+  }
+
+  document.getElementById('suggestBtn').addEventListener('click', ()=>{
+    const pc = document.getElementById('postcodeInput').value.trim() || 'your area';
+    suggestRound++;
+    const note = document.getElementById('suggestNote');
+    note.style.display = 'block';
+    note.textContent = suggestRound===1
+      ? `Places near ${pc}, picked for a group dinner:`
+      : `Another set near ${pc} (round ${suggestRound}):`;
+    document.getElementById('suggestBtn').textContent = '🔄 More suggestions';
+
+    const picks = nextSuggestions();
+    const wrap = document.getElementById('suggestWrap');
+    wrap.innerHTML = picks.map((s,i)=>`
+      <div class="suggest-card">
+        <span class="suggest-emoji">${s.emoji}</span>
+        <div class="suggest-main">
+          <div class="suggest-name">${s.name}</div>
+          <div class="suggest-blurb">${s.blurb}</div>
+        </div>
+        <button class="suggest-add" data-i="${i}" title="Add to list">+</button>
+      </div>`).join('');
+    wrap.querySelectorAll('.suggest-add').forEach(btn=>{
+      btn.onclick = ()=>{
+        if(btn.classList.contains('added')) return;
+        const s = picks[btn.dataset.i];
+        addPlace(s.emoji, s.name);
+        btn.classList.add('added');
+        btn.textContent = '✓';
+      };
+    });
+  });
+
+  // ---------- restaurant poll: host sets single/multiple, guest votes once per option ----------
+  let pollMode = 'single'; // single | multiple
+  let places = [
+    { emoji:'🍜', name:'Ramen Ichiraku', votes:4 },
+    { emoji:'🍝', name:'Trattoria Nonna', votes:2 },
+    { emoji:'🌮', name:'El Fuego', votes:0 },
+  ];
+  let guestSelections = new Set(); // this guest's own picks, so each option can only be toggled once per person
+
+  document.querySelectorAll('#pollModeRow .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#pollModeRow .chip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+      pollMode = c.dataset.mode;
+      const hint = document.getElementById('pollHintGuest');
+      hint.textContent = pollMode==='single'
+        ? 'pick one favorite · tap again to change your mind'
+        : 'one vote per option · tap again to remove it';
+      renderVotes('votesGuest');
+      renderVotes('votesResults');
+    });
+  });
+
+  function toggleVote(idx){
+    if(pollMode==='single'){
+      if(guestSelections.has(idx)){
+        places[idx].votes--; guestSelections.delete(idx);
+      } else {
+        guestSelections.forEach(i=>{ places[i].votes--; });
+        guestSelections.clear();
+        guestSelections.add(idx);
+        places[idx].votes++;
+      }
+    } else {
+      if(guestSelections.has(idx)){ places[idx].votes--; guestSelections.delete(idx); }
+      else { guestSelections.add(idx); places[idx].votes++; }
+    }
+    renderVotes('votesGuest');
+    renderVotes('votesResults');
+  }
+
+  function renderVotes(containerId){
+    const el = document.getElementById(containerId);
+    const maxVotes = Math.max(...places.map(p=>p.votes));
+    const shape = pollMode==='single' ? 'radio' : 'checkbox';
+    el.innerHTML = places.map((p,i)=>{
+      const checked = guestSelections.has(i);
+      const isTop = containerId==='votesResults' && maxVotes>0 && p.votes===maxVotes;
+      return `
+      <div class="vote-row">
+        <div class="vote-main">
+          ${isTop ? '<div class="badge-best">🏆 Top choice</div>' : ''}
+          <div class="vote-head"><span class="vname">${p.emoji} ${p.name}</span><span class="vcount">${p.votes} votes</span></div>
+          <div class="vote-track"><div class="vote-fill" style="width:${maxVotes ? p.votes/maxVotes*100 : 0}%"></div></div>
+        </div>
+        ${containerId==='votesGuest' ? `<div class="vote-btn ${shape}${checked?' checked':''}" data-idx="${i}">${checked?'✓':''}</div>` : ''}
+      </div>`;
+    }).join('');
+    if(containerId==='votesGuest'){
+      el.querySelectorAll('.vote-btn').forEach(btn=>{
+        btn.onclick = ()=> toggleVote(parseInt(btn.dataset.idx));
+      });
+    }
+  }
+
+  renderVotes('votesGuest');
+  renderVotes('votesResults');
+</script>
+
+</body>
+</html>
